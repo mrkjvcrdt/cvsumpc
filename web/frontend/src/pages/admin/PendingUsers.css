@@ -1,0 +1,28 @@
+/* src/pages/admin/PendingUsers.css */
+.pending-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.pending-users-table th,
+.pending-users-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.pending-users-table th {
+  background-color: #006241;
+  color: white;
+  font-weight: bold;
+}
+
+.pending-users-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.pending-users-table tr:hover {
+  background-color: #e1f5fe;
+}
