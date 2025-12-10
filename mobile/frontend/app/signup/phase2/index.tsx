@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
+  StatusBar,
   Platform,
   SafeAreaView,
   Modal,
@@ -83,7 +84,13 @@ export default function Phase2() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <SafeAreaView style={{ flex: 1,
+        backgroundColor: "white",}}>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor="black"
+            translucent={false}
+          />
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -92,6 +99,7 @@ export default function Phase2() {
           <ScrollView
             contentContainerStyle={styles.container}
             keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
             <Text style={styles.title}>Personal Information</Text>
 

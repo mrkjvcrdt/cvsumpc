@@ -1,37 +1,34 @@
 <?php
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
+header('Content-Type: application/json');
+include '../dbconn.php';
 
-include_once '../dbconn.php';
+// Get POST data
+$data = json_decode(file_get_contents('php://input'), true);
 
-//READ JSON
-$input = json_decode(file_get_contents('php://input'), true);
-$email = $input['email'] ?? "";
-
-if (!$email) {
-    echo json_encode(["error" => true, "message" => "Email is required"]);
+if (!isset($data['email']) || empty($data['email'])) {
+    echo json_encode(['error' => 'Email is required']);
     exit;
 }
 
-$email = mysqli_real_escape_string($conn, $email);
+$email = $data['email'];
 
-// Query pending_users table
-$sql = "SELECT status, remarks FROM pending_users WHERE email = '$email' ORDER BY pending_id DESC LIMIT 1";
-$result = mysqli_query($conn, $sql);
+// Prepare statement to avoid SQL injection
+$stmt = $conn->prepare("SELECT status FROM accounts WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
 
-if (mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
     echo json_encode([
-        "exists" => true,
-        "status" => $row['status'],
-        "remarks" => $row['remarks']
+        'exists' => true,
+        'status' => $row['status']
     ]);
 } else {
     echo json_encode([
-        "exists" => false
+        'exists' => false
     ]);
 }
 
-mysqli_close($conn);
-?>
+$stmt->close();
+$conn->close();
