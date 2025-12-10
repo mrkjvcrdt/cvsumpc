@@ -126,44 +126,6 @@ export default function AdminDashboard() {
     </div>
   );
 
-  const renderPendingUsers = () => (
-    <div className="content">
-      <h2>Pending User Registrations</h2>
-      {pendingUsers.length === 0 ? (
-        <p>No pending registrations.</p>
-      ) : (
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Sex</th>
-              <th>Birthday</th>
-              <th>Email</th>
-              <th>Address</th>
-              <th>Status</th>
-              <th>Remarks</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingUsers.map((user) => (
-              <tr key={user.pending_id}>
-                <td>{`${user.first_name} ${user.middle_name} ${user.last_name} ${user.suffix || ""}`}</td>
-                <td>{user.sex}</td>
-                <td>{user.birthday}</td>
-                <td>{user.email}</td>
-                <td>{`${user.street}, ${user.barangay}, ${user.municipality}, ${user.province} ${user.zip_code}`}</td>
-                <td>{user.status}</td>
-                <td>{user.remarks}</td>
-                <td>{user.created_at}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
-
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":

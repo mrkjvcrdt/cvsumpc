@@ -3,46 +3,44 @@ import {
   View,
   Text,
   ScrollView,
+  TextInput,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
-import { TERMS_TEXT } from "./terms";
-
-// Custom Checkbox
-const CustomCheckBox = ({
-  value,
-  onChange,
-}: {
-  value: boolean;
-  onChange: (val: boolean) => void;
-}) => (
-  <TouchableOpacity
-    onPress={() => onChange(!value)}
-    style={{
-      width: 24,
-      height: 24,
-      borderWidth: 1,
-      borderColor: "#ccc",
-      borderRadius: 4,
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    {value && <View style={{ width: 16, height: 16, backgroundColor: "#006400" }} />}
-  </TouchableOpacity>
-);
+import { styles } from "./styles";
 
 export default function Phase2() {
   const router = useRouter();
-  const [agreed, setAgreed] = useState(false);
   const [phase1Data, setPhase1Data] = useState<any>(null);
 
-  const API_HOST = "192.168.1.101"; // <-- CHANGE THIS WHEN TESTING
-  const REGISTER_PENDING_URL = `http://${API_HOST}/cvsumpc/mobile/backend/signup/register_pending.php`;
+  const [form, setForm] = useState({
+    last_name: "",
+    first_name: "",
+    middle_name: "",
+    suffix: "",
+    contact_number: "",
+    gender: "",
+    nationality: "",
+    birthday: "",
+    street: "",
+    barangay: "",
+    municipality: "",
+    province: "",
+    zipcode: "",
+  });
 
-  // Load Phase 1 data
+  const [errors, setErrors] = useState<any>({});
+  const [genderModalVisible, setGenderModalVisible] = useState(false);
+
+  const API_HOST = "192.168.1.101"; // backend host
+
   useEffect(() => {
     (async () => {
       const saved = await AsyncStorage.getItem("signup_phase1");
@@ -50,103 +48,143 @@ export default function Phase2() {
     })();
   }, []);
 
+  const handleChange = (key: string, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
   const handleNext = async () => {
-    if (!agreed) {
-      Alert.alert("Agreement Required", "You must agree to the Terms & Conditions to continue.");
-      return;
-    }
+    const newErrors: any = {};
 
-    if (!phase1Data) {
-      Alert.alert("Missing Data", "Phase 1 data not found. Please restart signup.");
-      router.replace("/signup/phase1");
-      return;
-    }
-
-    // Map Phase 1 + Phase 2 checkbox → pending_users table
-    const allData = {
-      ...phase1Data,
-      terms_agreed: 1, // checkbox
-      status: "Pending",
-      remarks: "",
-    };
-
-    try {
-      const response = await fetch(REGISTER_PENDING_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(allData),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        await AsyncStorage.setItem("pending_email", allData.email);
-        await AsyncStorage.setItem("signup_phase2_completed", "true");
-        router.push("/signup/pending");
-      } else {
-        Alert.alert("Signup Failed", result.message || "Please try again.");
+    ["last_name", "first_name", "contact_number", "nationality", "barangay", "municipality", "province", "zipcode"].forEach(
+      (key) => {
+        if (!form[key as keyof typeof form].trim()) {
+          newErrors[key] = "Required";
+        }
       }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Network Error", `Unable to reach the server at ${REGISTER_PENDING_URL}`);
+    );
+
+    if (form.contact_number && !/^\d+$/.test(form.contact_number)) {
+      newErrors.contact_number = "Numbers only";
     }
+    if (form.zipcode && !/^\d+$/.test(form.zipcode)) {
+      newErrors.zipcode = "Numbers only";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    await AsyncStorage.setItem("signup_phase2", JSON.stringify(form));
+    router.push("/signup/phase3");
   };
 
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={{ flex: 1, backgroundColor: "white", padding: 20 }}>
-        <Text
-          style={{
-            fontSize: 22,
-            fontWeight: "bold",
-            color: "#006400",
-            marginBottom: 15,
-            textAlign: "center",
-          }}
+      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
         >
-          Terms & Conditions – CvSUMPC Loan Application
-        </Text>
+          <ScrollView
+            contentContainerStyle={styles.container}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text style={styles.title}>Personal Information</Text>
 
-        <ScrollView
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderColor: "#ccc",
-            borderRadius: 8,
-            padding: 10,
-            marginBottom: 20,
-          }}
-        >
-          <Text style={{ fontSize: 14, color: "#333", lineHeight: 20 }}>
-            {TERMS_TEXT}
-          </Text>
-        </ScrollView>
+            {[
+              ["Last Name", "last_name"],
+              ["First Name", "first_name"],
+              ["Middle Name", "middle_name"],
+              ["Suffix", "suffix"],
+              ["Contact Number", "contact_number"],
+              ["Gender (Male/Female)", "gender"],
+              ["Nationality", "nationality"],
+              ["Birthday (YYYY-MM-DD)", "birthday"],
+              ["Street", "street"],
+              ["Barangay", "barangay"],
+              ["Municipality", "municipality"],
+              ["Province", "province"],
+              ["ZIP Code", "zipcode"],
+            ].map(([label, key]) => {
+              if (key === "gender") {
+                return (
+                  <View key={key} style={styles.inputContainer}>
+                    <Text style={styles.label}>{label}</Text>
+                    <TouchableOpacity
+                      onPress={() => setGenderModalVisible(true)}
+                      style={styles.textInput}
+                    >
+                      <Text>
+                        {form.gender ? form.gender : "Select Gender"}
+                      </Text>
+                    </TouchableOpacity>
 
-        {/* Checkbox */}
-        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 80 }}>
-          <CustomCheckBox value={agreed} onChange={setAgreed} />
-          <Text style={{ marginLeft: 8 }}>I Agree to the Terms & Conditions</Text>
-        </View>
+                    {errors.gender && (
+                      <Text style={styles.errorText}>{errors.gender}</Text>
+                    )}
 
-        {/* Fixed Next Button */}
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#006400",
-            padding: 15,
-            borderRadius: 10,
-            alignItems: "center",
-            position: "absolute",
-            bottom: 20,
-            left: 20,
-            right: 20,
-          }}
-          onPress={handleNext}
-        >
-          <Text style={{ color: "white", fontWeight: "bold" }}>Next</Text>
-        </TouchableOpacity>
-      </View>
+                    <Modal
+                      transparent
+                      visible={genderModalVisible}
+                      animationType="fade"
+                    >
+                      <TouchableWithoutFeedback
+                        onPress={() => setGenderModalVisible(false)}
+                      >
+                        <View style={styles.modalOverlay} />
+                      </TouchableWithoutFeedback>
+                      <View style={styles.modalContent}>
+                        {["Male", "Female"].map((g) => (
+                          <TouchableOpacity
+                            key={g}
+                            onPress={() => {
+                              handleChange("gender", g);
+                              setGenderModalVisible(false);
+                            }}
+                            style={styles.modalOption}
+                          >
+                            <Text style={styles.modalOptionText}>{g}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    </Modal>
+                  </View>
+                );
+              } else {
+                return (
+                  <View key={key} style={styles.inputContainer}>
+                    <Text style={styles.label}>{label}</Text>
+                    <TextInput
+                      value={form[key as keyof typeof form]}
+                      onChangeText={(v) => handleChange(key, v)}
+                      style={styles.textInput}
+                      keyboardType={
+                        key === "contact_number" || key === "zipcode"
+                          ? "numeric"
+                          : "default"
+                      }
+                      autoCapitalize="words"
+                    />
+                    {errors[key as keyof typeof errors] && (
+                      <Text style={styles.errorText}>
+                        {errors[key as keyof typeof errors]}
+                      </Text>
+                    )}
+                  </View>
+                );
+              }
+            })}
+
+            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+              <Text style={styles.nextButtonText}>Next</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </>
   );
 }

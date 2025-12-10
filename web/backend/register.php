@@ -1,6 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Content-Type: application/json");
 
 include 'dbconn.php';
@@ -20,35 +21,45 @@ $role = $data['role'] ?? 'employer';
 
 // Validate required fields
 if (!$employerID || !$companyName || !$email || !$password) {
-  echo json_encode(["success" => false, "message" => "Please fill in all required fields."]);
-  exit;
+    echo json_encode(["success" => false, "message" => "Please fill in all required fields."]);
+    exit;
+}
+
+// Check for duplicate employerID
+$check = $conn->prepare("SELECT employerID FROM staffuser WHERE employerID = ? LIMIT 1");
+$check->bind_param("s", $employerID);
+$check->execute();
+$result = $check->get_result();
+
+if ($result->num_rows > 0) {
+    echo json_encode(["success" => false, "message" => "❌ Employer ID already exists."]);
+    exit;
 }
 
 // Hash password
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// Prepare SQL
+// Insert record
 $sql = "INSERT INTO staffuser (employerID, companyName, firstName, middleName, lastName, suffix, email, password, role)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sssssssss", 
-  $employerID, 
-  $companyName, 
-  $firstName, 
-  $middleName, 
-  $lastName, 
-  $suffix, 
-  $email, 
-  $hashedPassword, 
-  $role
+$stmt->bind_param("sssssssss",
+    $employerID,
+    $companyName,
+    $firstName,
+    $middleName,
+    $lastName,
+    $suffix,
+    $email,
+    $hashedPassword,
+    $role
 );
 
-// Execute + respond
 if ($stmt->execute()) {
-  echo json_encode(["success" => true, "message" => "✅ Staff account created successfully!"]);
+    echo json_encode(["success" => true, "message" => "✅ Staff account created successfully!"]);
 } else {
-  echo json_encode(["success" => false, "message" => "❌ Error: " . $stmt->error]);
+    echo json_encode(["success" => false, "message" => "❌ Error: " . $stmt->error]);
 }
 
 $stmt->close();

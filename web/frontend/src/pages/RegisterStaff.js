@@ -23,7 +23,8 @@ export default function RegisterStaff() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost/cvsumpc/web/backend/register.php", {
+      const API_HOST = "localhost"; // Replace with your actual API host
+      const res = await fetch(`http://${API_HOST}/cvsumpc/web/backend/register.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

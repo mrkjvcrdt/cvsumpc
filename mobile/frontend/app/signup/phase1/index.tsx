@@ -4,96 +4,134 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter, Stack } from "expo-router";
-import { Picker } from "@react-native-picker/picker";
+import { Stack, useRouter } from "expo-router";
 import { styles } from "./styles";
+
+import eyeOpen from "../../images/eye_open.png";
+import eyeClosed from "../../images/eye_close.png";
 
 export default function Phase1() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    last_name: "",
-    first_name: "",
-    middle_name: "",
-    suffix: "",
-    sex: "",
-    birthYear: "",
-    birthMonth: "",
-    birthDay: "",
-    email: "",
-    street: "",
-    barangay: "",
-    municipality: "",
-    province: "",
-    zip_code: "",
-  });
 
-  const handleChange = (key: string, value: string) => {
-    let filteredValue = value;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-    if (["last_name", "first_name", "middle_name", "suffix"].includes(key)) {
-      filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
-    }
-    if (["zip_code", "birthYear", "birthMonth", "birthDay"].includes(key)) {
-      filteredValue = value.replace(/[^0-9]/g, "");
-    }
-    if (["street", "barangay", "municipality", "province"].includes(key)) {
-      filteredValue = value.replace(/[^a-zA-Z0-9\s]/g, "");
-    }
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-    setForm((prev) => ({ ...prev, [key]: filteredValue }));
+  const API_HOST = "192.168.1.101"; // CHANGE THIS BASED ON YOUR NETWORK
+
+  // Password validation
+  const validatePassword = (value: string) => {
+    const minLength = /.{8,}/;
+    const upper = /[A-Z]/;
+    const lower = /[a-z]/;
+    const number = /[0-9]/;
+    const symbol = /[_@+\-#]/;
+
+    if (!minLength.test(value)) return "Minimum 8 characters required.";
+    if (!upper.test(value)) return "Must contain an uppercase letter.";
+    if (!lower.test(value)) return "Must contain a lowercase letter.";
+    if (!number.test(value)) return "Must contain a number.";
+    if (!symbol.test(value)) return "Must contain a symbol (_, @, +, -, #).";
+
+    return "";
   };
 
   const handleNext = async () => {
-    const required = [
-      "last_name",
-      "first_name",
-      "email",
-      "sex",
-      "birthYear",
-      "birthMonth",
-      "birthDay",
-    ];
+    setEmailError("");
+    setPasswordError("");
 
-    for (const field of required) {
-      if (!form[field as keyof typeof form]) {
-        Alert.alert("Missing Info", `Please fill out the ${field} field.`);
+    if (!email.trim()) {
+      setEmailError("Email is required.");
+      return;
+    }
+
+    if (!password.trim()) {
+      setPasswordError("Password is required.");
+      return;
+    }
+
+    const passwordCheck = validatePassword(password);
+    if (passwordCheck !== "") {
+      setPasswordError(passwordCheck);
+      return;
+    }
+
+    const status = await checkEmailInDB();
+
+    if (!status) {
+      Alert.alert("Connection Error", "Failed to connect to server.");
+      return;
+    }
+
+    // Email already exists
+    if (status.exists) {
+      if (status.status === "Approved") {
+        setEmailError("Email is already in use.");
+        return;
+      }
+
+      if (status.status === "Pending") {
+        Alert.alert("Email Pending", "Email is waiting for approval.", [
+          {
+            text: "Close",
+            onPress: () => {
+              setEmail("");
+              setPassword("");
+            },
+          },
+        ]);
+        return;
+      }
+
+      if (status.status === "Rejected") {
+        Alert.alert("Email Rejected", "Email you used is rejected.", [
+          {
+            text: "Close",
+            onPress: () => {
+              setEmail("");
+              setPassword("");
+            },
+          },
+        ]);
         return;
       }
     }
 
-    // Validate birthday
-    const year = parseInt(form.birthYear, 10);
-    const month = parseInt(form.birthMonth, 10);
-    const day = parseInt(form.birthDay, 10);
-
-    if (year < 1900 || year > new Date().getFullYear()) {
-      Alert.alert("Invalid Date", "Please enter a valid year.");
-      return;
-    }
-    if (month < 1 || month > 12) {
-      Alert.alert("Invalid Date", "Month must be between 1 and 12.");
-      return;
-    }
-    if (day < 1 || day > 31) {
-      Alert.alert("Invalid Date", "Day must be between 1 and 31.");
-      return;
-    }
-
-    // Combine birthday
-    const birthday = `${year}-${month.toString().padStart(2, "0")}-${day
-      .toString()
-      .padStart(2, "0")}`;
-
-    const savedData = { ...form, birthday };
-    await AsyncStorage.setItem("signup_phase1", JSON.stringify(savedData));
+    // Email does not exist → proceed
+    await AsyncStorage.setItem(
+      "signup_phase1",
+      JSON.stringify({ email, password })
+    );
 
     router.push("/signup/phase2");
+  };
+
+  const checkEmailInDB = async () => {
+    try {
+      const response = await fetch(
+        `http://${API_HOST}/cvsumpc/mobile/backend/signup/check_email_status.php`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      return await response.json();
+    } catch (error) {
+      console.log("Error:", error);
+      return null;
+    }
   };
 
   return (
@@ -102,105 +140,65 @@ export default function Phase1() {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <ScrollView
-          style={styles.container}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 50 }}
-        >
-          <Text style={styles.title}>Personal & Address Information</Text>
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>Create Your Account</Text>
 
-          {/* Name Fields */}
-          {[
-            ["Last Name", "last_name"],
-            ["First Name", "first_name"],
-            ["Middle Name", "middle_name"],
-            ["Suffix (optional)", "suffix"],
-          ].map(([label, key]) => (
-            <View key={key} style={styles.inputContainer}>
-              <Text style={styles.label}>{label}</Text>
-              <TextInput
-                style={styles.textInput}
-                onChangeText={(v: string) => handleChange(key, v)}
-                value={form[key as keyof typeof form]}
-              />
-            </View>
-          ))}
-
-          {/* Sex Dropdown */}
+          {/* EMAIL */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Sex</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={form.sex}
-                onValueChange={(v) => handleChange("sex", v)}
-              >
-                <Picker.Item label="Select Sex" value="" />
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
-              </Picker>
-            </View>
+            <Text style={styles.label}>Email Address</Text>
+
+            <TextInput
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={(v) => {
+                setEmail(v);
+                setEmailError("");
+              }}
+              style={styles.textInput}
+            />
+
+            {emailError !== "" && (
+              <Text style={styles.errorText}>{emailError}</Text>
+            )}
           </View>
 
-          {/* Birthday Fields */}
-          <Text style={styles.label}>Birthday</Text>
-          <View style={styles.birthdayContainer}>
-            <TextInput
-              placeholder="YYYY"
-              keyboardType="numeric"
-              maxLength={4}
-              style={[styles.birthdayInput, styles.birthdayInputYear]}
-              onChangeText={(v: string) => handleChange("birthYear", v)}
-              value={form.birthYear}
-            />
-            <TextInput
-              placeholder="MM"
-              keyboardType="numeric"
-              maxLength={2}
-              style={[styles.birthdayInput, styles.birthdayInputMonth]}
-              onChangeText={(v: string) => handleChange("birthMonth", v)}
-              value={form.birthMonth}
-            />
-            <TextInput
-              placeholder="DD"
-              keyboardType="numeric"
-              maxLength={2}
-              style={[styles.birthdayInput, styles.birthdayInputDay]}
-              onChangeText={(v: string) => handleChange("birthDay", v)}
-              value={form.birthDay}
-            />
-          </View>
+          {/* PASSWORD */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Password</Text>
 
-          {/* Other Fields */}
-          {[
-            ["Email Address", "email"],
-            ["Street", "street"],
-            ["Barangay", "barangay"],
-            ["Municipality / City", "municipality"],
-            ["Province", "province"],
-            ["ZIP Code", "zip_code"],
-          ].map(([label, key]) => (
-            <View key={key} style={styles.inputContainer}>
-              <Text style={styles.label}>{label}</Text>
+            <View style={styles.passwordWrapper}>
               <TextInput
-                keyboardType={
-                  key === "zip_code"
-                    ? "numeric"
-                    : key === "email"
-                    ? "email-address"
-                    : "default"
-                }
-                autoCapitalize={key === "email" ? "none" : "words"}
-                style={styles.textInput}
-                onChangeText={(v: string) => handleChange(key, v)}
-                value={form[key as keyof typeof form]}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                value={password}
+                onChangeText={(v) => {
+                  setPassword(v);
+                  setPasswordError("");
+                }}
+                style={styles.passwordInput}
               />
-            </View>
-          ))}
 
-          {/* Next Button */}
+              {/* Eye toggle button */}
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.passwordToggle}
+              >
+                <Image
+                  source={showPassword ? eyeOpen : eyeClosed}
+                  style={styles.passwordIcon}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {passwordError !== "" && (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            )}
+          </View>
+
+          {/* NEXT BUTTON */}
           <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
             <Text style={styles.nextButtonText}>Next</Text>
           </TouchableOpacity>
