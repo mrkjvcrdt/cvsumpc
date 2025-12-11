@@ -1,39 +1,79 @@
-import { StyleSheet } from 'react-native';
-import { Colors } from '@/constants/theme'; // optional if you have a color theme
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    flexGrow: 1, // Use flexGrow for ScrollView contentContainerStyle
+    backgroundColor: "white",
     padding: 20,
-    backgroundColor: Colors?.light?.background || '#f5f5f5', // fallback color
+    justifyContent: "center", // vertically center the content
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: Colors?.light?.text || '#333',
-    marginBottom: 40,
-    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#006400",
+    marginBottom: 30,
+    textAlign: "center",
   },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 15,
+  inputContainer: {
     marginBottom: 20,
-    backgroundColor: '#fff',
   },
-  button: {
-    backgroundColor: Colors?.light?.tint || '#4CAF50',
-    paddingVertical: 15,
+  label: {
+    color: "#333",
+    marginBottom: 6,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ccc", // visible outline
     borderRadius: 8,
-    marginTop: 10,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: "#fafafa",
   },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
+  passwordWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    backgroundColor: "#fafafa",
+    paddingHorizontal: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 16,
+  },
+  passwordToggle: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+  },
+  passwordIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: "contain",
+  },
+  errorText: {
+    color: "red",
+    marginTop: 5,
+    fontSize: 12,
+  },
+  nextButton: {
+    backgroundColor: "#006400",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2, // adds shadow on Android
+  },
+  nextButtonText: {
+    color: "white",
+    fontWeight: "bold",
     fontSize: 16,
   },
 });

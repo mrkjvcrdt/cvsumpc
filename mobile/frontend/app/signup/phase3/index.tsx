@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import { styles } from "./styles";
 import { TERMS_TEXT } from "./terms";
+import { API_HOST } from "@/app/config";
 
 // Custom Checkbox
 const CustomCheckBox = ({
@@ -36,7 +37,6 @@ export default function Phase3() {
   const [phase1Data, setPhase1Data] = useState<any>(null);
   const [phase2Data, setPhase2Data] = useState<any>(null);
 
-  const API_HOST = "192.168.1.101";
   const REGISTER_ACCOUNT_URL = `http://${API_HOST}/cvsumpc/mobile/backend/signup/register_account.php`;
 
   // Load Phase 1 and Phase 2 data

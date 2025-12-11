@@ -13,6 +13,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import { styles } from "./styles";
+import { API_HOST } from "@/app/config";
 
 import eyeOpen from "../../images/eye_open.png";
 import eyeClosed from "../../images/eye_close.png";
@@ -26,8 +27,6 @@ export default function Phase1() {
 
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-
-  const API_HOST = "192.168.1.101"; // CHANGE THIS BASED ON YOUR NETWORK
 
   // Password validation
   const validatePassword = (value: string) => {

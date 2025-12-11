@@ -17,6 +17,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import { styles } from "./styles";
 
+import { API_HOST } from "@/app/config";
+
 export default function Phase2() {
   const router = useRouter();
   const [phase1Data, setPhase1Data] = useState<any>(null);
@@ -39,8 +41,6 @@ export default function Phase2() {
 
   const [errors, setErrors] = useState<any>({});
   const [genderModalVisible, setGenderModalVisible] = useState(false);
-
-  const API_HOST = "192.168.1.101"; // backend host
 
   useEffect(() => {
     (async () => {
