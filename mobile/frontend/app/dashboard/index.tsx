@@ -44,9 +44,9 @@ export default function Dashboard() {
         </View>
 
         <View style={styles.rightIcons}>
-          <View style={styles.iconWrapper}>
+          <TouchableOpacity style={styles.iconWrapper} onPress={() => router.push("/dashboard/loan_calculator")}>
             <Image source={calculatorLogo} style={styles.iconImage} resizeMode="contain" />
-          </View>
+          </TouchableOpacity>
           <Image source={profileImage} style={styles.profile} resizeMode="contain" />
         </View>
       </View>
