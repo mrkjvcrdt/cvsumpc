@@ -6,6 +6,7 @@ export default function PendingUsers() {
   const [pendingUsers, setPendingUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch pending accounts
   const fetchPendingUsers = async () => {
@@ -36,9 +37,7 @@ export default function PendingUsers() {
   // Approve / Reject
   const handleAction = async (account_id, action) => {
     const confirmMsg =
-      action === "approve"
-        ? "Approve this account?"
-        : "Reject this account?";
+      action === "approve" ? "Approve this account?" : "Reject this account?";
     if (!window.confirm(confirmMsg)) return;
 
     setProcessing({ ...processing, [account_id]: true });
@@ -65,9 +64,42 @@ export default function PendingUsers() {
     }
   };
 
+  // Filter results
+  const filteredUsers = pendingUsers.filter((user) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      user.first_name.toLowerCase().includes(search) ||
+      user.last_name.toLowerCase().includes(search) ||
+      user.middle_name.toLowerCase().includes(search) ||
+      user.email.toLowerCase().includes(search) ||
+      user.contact_number.toLowerCase().includes(search) ||
+      user.barangay.toLowerCase().includes(search) ||
+      user.municipality.toLowerCase().includes(search) ||
+      user.province.toLowerCase().includes(search)
+    );
+  });
+
   return (
     <div className="content">
       <h2>Pending Accounts</h2>
+
+      {/* 🔍 Search Bar aligned to the right */}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: "8px 12px",
+            fontSize: "14px",
+            width: "250px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
 
       <div className="table-wrapper">
         <table className="pending-users-table">
@@ -87,12 +119,14 @@ export default function PendingUsers() {
               <tr>
                 <td colSpan="6" className="text-center">Loading...</td>
               </tr>
-            ) : pendingUsers.length === 0 ? (
+            ) : filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center">No pending accounts.</td>
+                <td colSpan="6" style={{ textAlign: "center", color: "red", fontWeight: "bold" }}>
+                  No result found.
+                </td>
               </tr>
             ) : (
-              pendingUsers.map((user) => (
+              filteredUsers.map((user) => (
                 <tr key={user.account_id}>
                   <td>
                     {user.last_name} {user.suffix && user.suffix + "."},{" "}

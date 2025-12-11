@@ -52,9 +52,11 @@ export default function Employer() {
 
         // Redirect based on role
         if (data.role === "admin") {
-          navigate("/admin-dashboard");
+          sessionStorage.setItem("admin_logged_in", "true");
+          navigate("/admin-dashboard", { replace: true });
         } else if (data.role === "employer") {
-          navigate("/employer-dashboard");
+          sessionStorage.setItem("employer_logged_in", "true");
+          navigate("/employer-dashboard", { replace: true });
         } else {
           setMessage("⚠️ Unknown role: " + data.role);
         }

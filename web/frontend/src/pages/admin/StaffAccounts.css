@@ -1,0 +1,138 @@
+/* Shared Admin Table CSS for StaffAccounts and MemberAccounts */
+
+.content {
+  padding: 20px;
+}
+
+h2 {
+  margin-bottom: 15px;
+}
+
+/* Table wrapper for responsive scrolling */
+.table-wrapper {
+  overflow-x: auto;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-table thead {
+  background-color: #343a40;
+  color: white;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-table tbody tr:hover {
+  background-color: #f2f2f2;
+  transition: 0.2s;
+}
+
+/* Status text */
+.admin-table td.status {
+  font-weight: bold;
+}
+
+/* Action Buttons (if needed in future) */
+.approve-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease-in-out;
+}
+
+.approve-btn:hover {
+  background-color: #1f8a39;
+}
+
+.approve-btn:disabled {
+  background-color: #9fd8aa;
+  cursor: not-allowed;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 5px;
+  transition: 0.2s ease-in-out;
+}
+
+.reject-btn:hover {
+  background-color: #b52b38;
+}
+
+.reject-btn:disabled {
+  background-color: #e9a3a9;
+  cursor: not-allowed;
+}
+
+/* No result found message */
+.no-result {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  padding: 10px 0;
+}
+
+/* Optional: search input at top right if needed later */
+.search-input {
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 250px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+/* Action icons */
+.action-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* Colorized icons */
+.icon-view {
+  filter: brightness(0) saturate(100%) invert(48%) sepia(89%) saturate(354%) hue-rotate(83deg) brightness(95%) contrast(91%);
+}
+
+.icon-edit {
+  filter: brightness(0) saturate(100%) invert(68%) sepia(63%) saturate(747%) hue-rotate(358deg) brightness(95%) contrast(91%);
+}
+
+.icon-delete {
+  filter: brightness(0) saturate(100%) invert(32%) sepia(98%) saturate(745%) hue-rotate(339deg) brightness(92%) contrast(89%);
+}
+
+/* Hover animation */
+.icon:hover {
+  transform: scale(1.1);
+}

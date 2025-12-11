@@ -26,3 +26,55 @@
 .pending-users-table tr:hover {
   background-color: #e1f5fe;
 }
+
+.search-bar {
+  width: 300px;
+  padding: 8px 12px;
+  font-size: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+}
+
+/* APPROVE BUTTON - green */
+.approve-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease-in-out;
+}
+
+.approve-btn:hover {
+  background-color: #1f8a39;
+}
+
+.approve-btn:disabled {
+  background-color: #9fd8aa;
+  cursor: not-allowed;
+}
+
+/* REJECT BUTTON - red */
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 5px;
+  transition: 0.2s ease-in-out;
+}
+
+.reject-btn:hover {
+  background-color: #b52b38;
+}
+
+.reject-btn:disabled {
+  background-color: #e9a3a9;
+  cursor: not-allowed;
+}

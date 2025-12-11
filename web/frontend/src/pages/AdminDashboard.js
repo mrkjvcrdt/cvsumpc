@@ -11,6 +11,8 @@ import {
 import logo from "../images/cvsumpc_logo.jpg";
 
 import PendingUsers from "./admin/PendingUsers";
+import StaffAccounts from "./admin/StaffAccounts";
+import MemberAccounts from "./admin/MemberAccounts";
 // import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
@@ -24,10 +26,18 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+    useEffect(() => {
+    const admin = sessionStorage.getItem("admin_logged_in");
+    if (!admin) {
+      window.location.replace("/Employer");
+    }
+  }, []);
 
   const fetchDashboardData = async () => {
     try {
-      const res = await fetch("http://localhost/cvsumpc/web/backend/get_admin_data.php");
+      const res = await fetch(
+        "http://localhost/cvsumpc/web/backend/admin/get_admin_data.php"
+      );
       const data = await res.json();
       if (data.success) {
         setStaffList(data.staffList);
@@ -43,7 +53,7 @@ export default function AdminDashboard() {
 
   const handleLogout = () => {
     sessionStorage.clear();
-    window.location.href = "/Admin"; // redirect to login
+    window.location.replace("/Employer");
   };
 
   const renderDashboard = () => (
@@ -66,76 +76,16 @@ export default function AdminDashboard() {
     </div>
   );
 
-  const renderStaffAccounts = () => (
-    <div className="content">
-      <h2>Staff Accounts</h2>
-      {staffList.length === 0 ? (
-        <p>No staff accounts found.</p>
-      ) : (
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {staffList.map((staff) => (
-              <tr key={staff.id}>
-                <td>{`${staff.first_name} ${staff.middle_name} ${staff.last_name}`}</td>
-                <td>{staff.email}</td>
-                <td>{staff.role}</td>
-                <td>{staff.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
-
-  const renderMemberAccounts = () => (
-    <div className="content">
-      <h2>Member Accounts</h2>
-      {membersList.length === 0 ? (
-        <p>No member accounts found.</p>
-      ) : (
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Contact</th>
-              <th>Joined At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {membersList.map((member) => (
-              <tr key={member.id}>
-                <td>{`${member.first_name} ${member.middle_name} ${member.last_name}`}</td>
-                <td>{member.email}</td>
-                <td>{member.contact_number}</td>
-                <td>{member.created_at}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
-
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
         return renderDashboard();
       case "staff":
-        return renderStaffAccounts();
+        return <StaffAccounts />;
       case "members":
-        return renderMemberAccounts();
+        return <MemberAccounts />;
       case "pending":
-        return <PendingUsers pendingUsers={pendingUsers} />;
+        return <PendingUsers />;
       case "settings":
         return <h2>Settings</h2>;
       default:
@@ -176,7 +126,9 @@ export default function AdminDashboard() {
 
       <main className="main-content">
         <header className="topbar">
-          <h1>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
+          <h1>
+            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+          </h1>
         </header>
         {renderContent()}
       </main>

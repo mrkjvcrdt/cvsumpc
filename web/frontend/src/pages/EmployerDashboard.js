@@ -112,7 +112,7 @@ export default function EmployerDashboard() {
 
   const handleLogout = () => {
     sessionStorage.clear();
-    window.location.href = "/Employer"; // redirect back to login
+    window.location.replace("/Employer");
   };
 
   const renderContent = () => {

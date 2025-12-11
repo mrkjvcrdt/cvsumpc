@@ -1,0 +1,93 @@
+/* src/pages/admin/MemberAccounts.css */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.admin-table th {
+  background-color: #006241;
+  color: white;
+  font-weight: bold;
+}
+
+.admin-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.admin-table tr:hover {
+  background-color: #e1f5fe;
+}
+
+/* Table wrapper for scroll */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  background-color: #fff;
+}
+
+/* Search bar */
+.search-input {
+  width: 300px;
+  padding: 8px 12px;
+  font-size: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+}
+
+/* No result / empty state row */
+.no-result {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  padding: 10px 0;
+}
+
+/* Table controls (for search bar alignment) */
+.table-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+/* Action icons */
+.action-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* Colorized icons */
+.icon-view {
+  filter: brightness(0) saturate(100%) invert(48%) sepia(89%) saturate(354%) hue-rotate(83deg) brightness(95%) contrast(91%);
+}
+
+.icon-edit {
+  filter: brightness(0) saturate(100%) invert(68%) sepia(63%) saturate(747%) hue-rotate(358deg) brightness(95%) contrast(91%);
+}
+
+.icon-delete {
+  filter: brightness(0) saturate(100%) invert(32%) sepia(98%) saturate(745%) hue-rotate(339deg) brightness(92%) contrast(89%);
+}
+
+/* Hover animation */
+.icon:hover {
+  transform: scale(1.1);
+}
