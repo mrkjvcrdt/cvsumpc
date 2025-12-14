@@ -13,7 +13,7 @@ import logo from "../images/cvsumpc_logo.jpg";
 import PendingUsers from "./admin/PendingUsers";
 import StaffAccounts from "./admin/StaffAccounts";
 import MemberAccounts from "./admin/MemberAccounts";
-// import "./AdminDashboard.css";
+import Settings from "./admin/Settings";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
       case "pending":
         return <PendingUsers />;
       case "settings":
-        return <h2>Settings</h2>;
+        return <Settings />;
       default:
         return <h2>Welcome</h2>;
     }

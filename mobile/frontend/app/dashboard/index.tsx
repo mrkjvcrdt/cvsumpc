@@ -10,6 +10,9 @@ import cvsumpcLogo from "../images/cvsumpc.png"
 import profileImage from "../images/profile.png";
 import calculatorLogo from "../images/calculator.png";
 
+// Dashboard Component
+import SavingsWidget from "./savings_widget";
+
 export default function Dashboard() {
   const router = useRouter();
   const [accountId, setAccountId] = useState<number | null>(null);
@@ -53,11 +56,13 @@ export default function Dashboard() {
 
       {/* Main dashboard content */}
       <View style={styles.container}>
+        <SavingsWidget />
         <Text style={styles.title}>Welcome to Dashboard!</Text>
 
         {accountId && (
           <Text style={styles.accountText}>Your Account ID: {accountId}</Text>
         )}
+
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
