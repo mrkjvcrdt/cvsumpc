@@ -96,7 +96,7 @@ export default function Employer() {
       <div className="top-bar">
         <div className="contact-info">
           <a href="tel:#########">
-            <FaPhone /> #########
+            <FaPhone /> (046) 415-1605
           </a>
           <a href="mailto:contactus@csu.coop">
             <FaEnvelope /> contactus@csu.coop

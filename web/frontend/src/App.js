@@ -31,7 +31,7 @@ function Layout({ children }) {
       {/* Top Bar */}
       <div className="top-bar">
         <div className="contact-info">
-          <a href="tel:#########"><FaPhone /> #########</a>
+          <a href="tel:#########"><FaPhone /> (046) 415-1605</a>
           <a href="mailto:contactus@csu.coop"><FaEnvelope /> contactus@csu.coop</a>
           <a href="https://www.facebook.com/csudc.indangcavite" target="_blank" rel="noreferrer">
             <FaFacebook /> CvSU Multipurpose Cooperative on Facebook
