@@ -57,6 +57,16 @@ export default function Login() {
         return;
       }
 
+      // Blocks non-approved accounts
+      // if (result.status !== "Approved") {
+      //   setIdentifierError(
+      //     result.status === "Pending"
+      //       ? "Your account is still pending approval."
+      //       : "Your account has been rejected."
+      //   );
+      //   return;
+      // }
+
       //Save login session
       await AsyncStorage.setItem(
         "user_session",

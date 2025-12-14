@@ -17,7 +17,7 @@ $identifier = trim($data['identifier']); // email or contact_number
 $password = $data['password'];
 
 // Check if account exists (email OR contact_number)
-$stmt = $conn->prepare("SELECT account_id, email, contact_number, password, PIN FROM accounts WHERE email = ? OR contact_number = ?");
+$stmt = $conn->prepare("SELECT account_id, email, contact_number, password, PIN, status FROM accounts WHERE email = ? OR contact_number = ?");
 $stmt->bind_param("ss", $identifier, $identifier);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -32,6 +32,30 @@ $user = $result->fetch_assoc();
 // Verify password
 if (!password_verify($password, $user['password'])) {
     echo json_encode(["success" => false, "message" => "Password is incorrect."]);
+    exit;
+}
+
+// ✅ Check account status
+$status = strtolower($user['status']); // case-insensitive
+
+if ($status === 'pending') {
+    echo json_encode([
+        "success" => false,
+        "message" => "Your account is still pending approval."
+    ]);
+    exit;
+} elseif ($status === 'rejected') {
+    echo json_encode([
+        "success" => false,
+        "message" => "Your account has been rejected."
+    ]);
+    exit;
+} elseif ($status !== 'approved') {
+    // Catch any unexpected value
+    echo json_encode([
+        "success" => false,
+        "message" => "Your account status is invalid."
+    ]);
     exit;
 }
 

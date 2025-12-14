@@ -3,6 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
+
 include '../dbconn.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
@@ -17,33 +18,60 @@ if (!$account_id || !$action) {
 
 $status = ($action === "approve") ? "Approved" : "Rejected";
 
-// 🔍 IMPORTANT: make sure the column name is CORRECT
-$sql = "UPDATE accounts SET status = ?, updated_at = NOW() WHERE account_id = ?";
+$conn->begin_transaction();
 
-$stmt = $conn->prepare($sql);
+try {
 
-// --- DEBUG: check if prepare failed ---
-if (!$stmt) {
-    echo json_encode([
-        "success" => false,
-        "message" => "SQL prepare failed: " . $conn->error
-    ]);
-    exit;
-}
+    // 1️⃣ Update account status
+    $sql = "UPDATE accounts 
+            SET status = ?, updated_at = NOW() 
+            WHERE account_id = ?";
+    $stmt = $conn->prepare($sql);
 
-$stmt->bind_param("si", $status, $account_id);
+    if (!$stmt) {
+        throw new Exception("Prepare failed (accounts): " . $conn->error);
+    }
 
-if ($stmt->execute()) {
+    $stmt->bind_param("si", $status, $account_id);
+    $stmt->execute();
+    $stmt->close();
+
+    // 2️⃣ Create savings account ONLY if approved
+    if ($action === "approve") {
+
+        $sqlSavings = "
+            INSERT IGNORE INTO savings_account (account_id)
+            VALUES (?)
+        ";
+
+        $stmtSavings = $conn->prepare($sqlSavings);
+
+        if (!$stmtSavings) {
+            throw new Exception("Prepare failed (savings): " . $conn->error);
+        }
+
+        $stmtSavings->bind_param("i", $account_id);
+        $stmtSavings->execute();
+        $stmtSavings->close();
+    }
+
+    // 3️⃣ Commit everything
+    $conn->commit();
+
     echo json_encode([
         "success" => true,
         "message" => "Account has been " . strtolower($status) . "."
     ]);
-} else {
+
+} catch (Exception $e) {
+
+    // 🔥 Rollback if anything fails
+    $conn->rollback();
+
     echo json_encode([
         "success" => false,
-        "message" => "Execution failed: " . $stmt->error
+        "message" => $e->getMessage()
     ]);
 }
 
-$stmt->close();
 $conn->close();
