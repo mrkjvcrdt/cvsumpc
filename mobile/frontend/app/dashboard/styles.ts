@@ -84,5 +84,67 @@ export const styles = StyleSheet.create({
     width: 28,
     height: 28,
   },  
+  // ===== WIDGET CARD =====
+  widgetCard: {
+    backgroundColor: "#ffffff",
+    marginHorizontal: 20,
+    marginTop: 15,
+    padding: 20,
+    borderRadius: 16,
+    elevation: 4,
+  },
+  widgetTitle: {
+    fontSize: 20,
+    color: "#000",
+    fontWeight: 600,
+  },
+  widgetAmount: {
+    fontSize: 32,
+    fontWeight: 900,
+    color: "#000",
+    marginVertical: 8,
+    alignSelf: "flex-end",
+  },
+  widgetSubText: {
+    fontSize: 14,
+    color: "#000",
+    fontWeight: 400,
+  },
+  widgetContainer: {
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  widgetFrame: {
+    height: 140,
+    backgroundColor: "#ffbf00",
+    borderRadius: 16,
+    padding: 20,
+    paddingTop: 15,
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  /* ===== DOTS ===== */
+  dotsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#ccc",
+    marginHorizontal: 5,
+  },
+
+  activeDot: {
+    backgroundColor: "#ffbf00",
+  },
 });
 
