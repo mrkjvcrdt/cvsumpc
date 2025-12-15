@@ -146,5 +146,67 @@ export const styles = StyleSheet.create({
   activeDot: {
     backgroundColor: "#ffbf00",
   },
+
+  // OVERLAY MENU
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  sideMenu: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: 260,
+    backgroundColor: "#fff",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    elevation: 10,
+  },
+  menuAvatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignSelf: "center",
+    marginBottom: 12,
+  },
+  menuName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#006400",
+    textAlign: "center",
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: "#ddd",
+    marginVertical: 20,
+  },
+  menuItem: {
+    fontSize: 16,
+    color: "#006400",
+    paddingVertical: 10,
+    fontWeight: "600",
+  },
+
+  // APPLY LOAN BUTTON
+  applyLoanContainer: {
+    marginTop: 16,
+    paddingHorizontal: 20,
+  },
+  applyLoanButton: {
+    backgroundColor: "#ffffff",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    elevation: 3,
+  },
+  applyLoanText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#006400",
+  },
 });
 

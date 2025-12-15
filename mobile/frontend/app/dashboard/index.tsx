@@ -6,11 +6,14 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  Animated,
+  Pressable,
  } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./styles";
+import { API_HOST } from "../config";
 
 // Images
 import cvsumpcLogo from "../images/cvsumpc.png"
@@ -30,15 +33,47 @@ export default function Dashboard() {
 
   const scrollRef = useRef<ScrollView>(null);
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [userName, setUserName] = useState<string>("");
+
+  const slideAnim = useRef(new Animated.Value(width)).current;
+
+  const fetchAccountInfo = async (accountId: number) => {
+  try {
+    const response = await fetch(
+      `http://${ API_HOST }/cvsumpc/mobile/backend/dashboard/fetch_account_info.php`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ account_id: accountId }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      const suffix = result.suffix ? ` ${result.suffix}` : "";
+      setUserName(`${result.last_name}${suffix}, ${result.first_name}`);
+    }
+  } catch (error) {
+    console.log("Failed to fetch account info:", error);
+  }
+};
+
+
   useEffect(() => {
     const getSession = async () => {
       const sessionStr = await AsyncStorage.getItem("user_session");
-      if (sessionStr) {
+
+      if (!sessionStr) {
+        router.replace("/login");
+        return;
+      }
+        console.log("SESSION DATA: ", sessionStr);
+
         const session = JSON.parse(sessionStr);
         setAccountId(session.account_id);
-      } else {
-        router.replace("/login");
-      }
+        fetchAccountInfo(session.account_id);
     };
     getSession();
   }, []);
@@ -47,6 +82,23 @@ export default function Dashboard() {
     await AsyncStorage.removeItem("user_session");
     await AsyncStorage.removeItem("user_PIN");
     router.replace("/login");
+  };
+
+  const openMenu = () => {
+    setMenuOpen(true);
+    Animated.timing(slideAnim, {
+      toValue: width - 260,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const closeMenu = () => {
+    Animated.timing(slideAnim, {
+      toValue: width,
+      duration: 250,
+      useNativeDriver: false,
+    }).start(() => setMenuOpen(false));
   };
 
   const handleScroll = (event: any) => {
@@ -71,7 +123,9 @@ export default function Dashboard() {
           <TouchableOpacity style={styles.iconWrapper} onPress={() => router.push("/dashboard/loan_calculator")}>
             <Image source={calculatorLogo} style={styles.iconImage} resizeMode="contain" />
           </TouchableOpacity>
-          <Image source={profileImage} style={styles.profile} resizeMode="contain" />
+          <TouchableOpacity onPress={openMenu}>
+            <Image source={profileImage} style={styles.profile} resizeMode="contain" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -112,6 +166,19 @@ export default function Dashboard() {
         </View>
       </View>
 
+      {/* APPLY LOAN BUTTON */}
+      <View style={styles.applyLoanContainer}>
+        <TouchableOpacity
+          style={styles.applyLoanButton}
+          onPress={() => router.push("/dashboard/loan_apply")}
+        >
+          <Text style={styles.applyLoanText}>
+            Apply for Loan
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to Dashboard!</Text>
 
@@ -128,6 +195,25 @@ export default function Dashboard() {
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
+
+      {menuOpen && (
+      <>
+        {/* Overlay */}
+        <Pressable style={styles.overlay} onPress={closeMenu} />
+          
+        {/* Side Panel */}
+        <Animated.View style={[styles.sideMenu, { left: slideAnim }]}>
+          <Image source={profileImage} style={styles.menuAvatar} />
+          <Text style={styles.menuName}>{userName}</Text>
+          
+          <View style={styles.menuDivider} />
+          
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={styles.menuItem}>Logout</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </>
+    )}
     </SafeAreaView>
   );
 }
