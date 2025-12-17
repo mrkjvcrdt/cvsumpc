@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@react-native-picker/picker": "^2.11.4"
+    "@react-native-picker/picker": "^2.11.4",
+    "expo-document-picker": "~14.0.8"
   }
 }

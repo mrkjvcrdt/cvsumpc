@@ -153,7 +153,9 @@ export default function Employer() {
             Login
           </button>
 
-          <p className="signup-text">
+          {/* STAFF ASSIGNING */}
+
+          {/* <p className="signup-text">
             Don't have an account?{" "}
             <button className="link-btn" onClick={() => setShowSignUp(true)}>
               Sign Up
@@ -162,7 +164,7 @@ export default function Employer() {
 
           <button className="btn-secondary" onClick={() => navigate("/registerstaff")}>
             Register Staff
-          </button>
+          </button> */}
 
           {message && <p className="message">{message}</p>}
         </div>
