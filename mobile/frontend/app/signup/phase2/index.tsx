@@ -9,15 +9,13 @@ import {
   KeyboardAvoidingView,
   StatusBar,
   Platform,
-  SafeAreaView,
   Modal,
   TouchableWithoutFeedback,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import { styles } from "./styles";
-
-import { API_HOST } from "@/app/config";
 
 export default function Phase2() {
   const router = useRouter();

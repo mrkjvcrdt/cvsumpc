@@ -45,7 +45,7 @@ export default function PendingScreen() {
           borderRadius: 10,
           marginTop: 10,
         }}
-        onPress={() => router.replace("../../choose/index")}
+        onPress={() => router.replace("../../choose")}
       >
         <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
           Go to Main Screen

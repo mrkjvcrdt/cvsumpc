@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./LoanRequests.css";
 
+// Action components
+import ViewLoanRequest from "./actions/view_loan_request";
+
 // Action icons
 import viewIcon from "../../images/eye_open.png";
-import editIcon from "../../images/edit_pencil.svg";
-import deleteIcon from "../../images/delete.svg";
 
 export default function LoanRequests() {
   const [loanRequests, setLoanRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
 
   const fetchLoanRequests = async () => {
     try {
@@ -87,15 +89,25 @@ export default function LoanRequests() {
                   <td>{lr.application_date}</td>
                   <td>{lr.status}</td>
                   <td className="action-icons">
-                    <img src={viewIcon} alt="View" className="icon icon-view" title="View" />
-                    <img src={editIcon} alt="Edit" className="icon icon-edit" title="Edit" />
-                    <img src={deleteIcon} alt="Delete" className="icon icon-delete" title="Delete" />
+                    <img 
+                      src={viewIcon}
+                      alt="View" 
+                      className="icon icon-view"
+                      title="View" 
+                      onClick={() => setSelectedApplicationId(lr.application_id)} />
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+
+        {selectedApplicationId && (
+          <ViewLoanRequest
+            applicationId={selectedApplicationId}
+            onClose={() => setSelectedApplicationId(null)}
+          />
+        )}
       </div>
     </div>
   );

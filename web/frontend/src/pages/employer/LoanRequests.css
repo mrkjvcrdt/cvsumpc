@@ -82,14 +82,6 @@
   filter: brightness(0) saturate(100%) invert(48%) sepia(89%) saturate(354%) hue-rotate(83deg) brightness(95%) contrast(91%);
 }
 
-.icon-edit {
-  filter: brightness(0) saturate(100%) invert(68%) sepia(63%) saturate(747%) hue-rotate(358deg) brightness(95%) contrast(91%);
-}
-
-.icon-delete {
-  filter: brightness(0) saturate(100%) invert(32%) sepia(98%) saturate(745%) hue-rotate(339deg) brightness(92%) contrast(89%);
-}
-
 .icon:hover {
   transform: scale(1.1);
 }
